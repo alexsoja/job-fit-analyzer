@@ -19,27 +19,39 @@ def extract_education_block(text: str) -> str:
     return text[:800]
 
 
+import re
+
+
 def detect_degree_level(text: str) -> str | None:
     """
-    Regex-based degree detection to avoid false positives.
-
-    Looks for common degree tokens using word boundaries.
+    Detect the highest degree level mentioned in text.
+    Returns: 'phd', 'masters', 'bachelors', or None
     """
     t = text.lower()
 
-    # bachelors
-    if re.search(r"\b(bachelor|b\.?s\.?|b\.?a\.?)\b", t):
-        return "bachelors"
-
-    # masters
-    if re.search(r"\b(master|m\.?s\.?|m\.?a\.?|mba)\b", t):
-        return "masters"
-
-    # phd
-    if re.search(r"\b(phd|ph\.?d\.?|doctorate)\b", t):
+    # ---- PhD (highest first) ----
+    if re.search(
+        r"\b(ph\.?d\.?|phd|doctorate|doctoral)\b",
+        t,
+    ):
         return "phd"
 
+    # ---- Masters ----
+    if re.search(
+        r"\b(master|masters|m\.?s\.?|m\.?a\.?|mba|m\.?eng\.?)\b",
+        t,
+    ):
+        return "masters"
+
+    # ---- Bachelors ----
+    if re.search(
+        r"\b(bachelor|bachelors|b\.?s\.?|b\.?a\.?|b\.?eng\.?)\b",
+        t,
+    ):
+        return "bachelors"
+
     return None
+
 
 
 def detect_major_keywords(text: str, major_keywords: list[str]) -> set[str]:
