@@ -13,8 +13,10 @@ from jobfit.extract.education import (
     detect_degree_level,
     detect_major_keywords,
 )
+from jobfit.extract.experience import extract_years_required, estimate_resume_years
 from jobfit.score.scoring import score_skills
 from jobfit.score.education_scoring import score_education
+from jobfit.score.experience_scoring import score_experience
 
 
 def analyze(resume_text: str, jd_text: str) -> dict:
@@ -22,9 +24,10 @@ def analyze(resume_text: str, jd_text: str) -> dict:
     Shared analysis function used by both CLI and Streamlit.
 
     Returns a dict with:
-    - score breakdown (skills + education for now)
+    - score breakdown (skills + education + experience)
     - skills matched/missing
     - education signals
+    - experience signals
     - previews (before/after normalize)
     - requirement coverage (skills-based)
     """
@@ -51,7 +54,6 @@ def analyze(resume_text: str, jd_text: str) -> dict:
     jd_degree = detect_degree_level(jd_text)
     jd_majors = detect_major_keywords(jd_text, majors_list)
 
-    # IMPORTANT: only scan the resume education block to avoid false positives
     resume_edu_block = extract_education_block(resume_text)
     resume_degree = detect_degree_level(resume_edu_block)
     resume_majors = detect_major_keywords(resume_edu_block, majors_list)
@@ -64,11 +66,21 @@ def analyze(resume_text: str, jd_text: str) -> dict:
         max_points=15,
     )
 
-    # -------- Requirements coverage (skills-based) --------
+    # -------- Experience --------
+    jd_years_required = extract_years_required(jd_text)
+    resume_years_estimate = estimate_resume_years(resume_text)
+
+    exp = score_experience(
+        jd_years_required=jd_years_required,
+        resume_years_estimate=resume_years_estimate,
+        max_points=35,
+    )
+
+    # -------- Requirement coverage (skills-based) --------
     req_lines = extract_requirement_lines(jd_text)
     coverage: list[dict] = []
     for line in req_lines:
-        low = line.lower()
+        low = normalize_text(line)  # normalize line too
         matched_in_line = [s for s in matched_skills if s in low]
         missing_in_line = [s for s in missing_skills if s in low]
         if matched_in_line or missing_in_line:
@@ -80,8 +92,8 @@ def analyze(resume_text: str, jd_text: str) -> dict:
                 }
             )
 
-    # Total score (out of 100, but only skills+education currently)
-    total_points = skills_points + edu["education_total"]
+    # -------- Total --------
+    total_points = skills_points + edu["education_total"] + exp["experience_total"]
 
     return {
         "score": {
@@ -89,9 +101,11 @@ def analyze(resume_text: str, jd_text: str) -> dict:
             "skills_max": 50,
             "education_points": edu["education_total"],
             "education_max": 15,
+            "experience_points": exp["experience_total"],
+            "experience_max": 35,
             "total_points": total_points,
             "total_max": 100,
-            "note": "Total score includes skills + education. Add experience later.",
+            "note": "Total score includes skills + education + experience.",
         },
         "skills": {
             "resume_skills": sorted(resume_skills),
@@ -100,12 +114,12 @@ def analyze(resume_text: str, jd_text: str) -> dict:
             "missing": missing_skills,
         },
         "education": edu,
+        "experience": exp,
         "previews": {
             "resume_before": resume_text[:120],
             "jd_before": jd_text[:120],
             "resume_after": resume_norm[:120],
             "jd_after": jd_norm[:120],
-            # helpful debug if you want to display later
             "resume_edu_block": resume_edu_block[:400],
         },
         "requirements": {

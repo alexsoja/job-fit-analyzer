@@ -9,9 +9,7 @@ import streamlit as st
 
 from jobfit.analyze import analyze
 from jobfit.ingest.pdf_extract import extract_text_from_pdf
-
-import jobfit
-st.write("jobfit imported from:", jobfit.__file__)
+from jobfit.preprocess.normalize import normalize_text
 
 
 st.title("Job Fit Analyzer")
@@ -26,24 +24,25 @@ if analyze_clicked:
         st.error("Please upload a resume PDF and paste a job description.")
         st.stop()
 
-    # Save uploaded PDF to a temp file (pypdf needs a file path)
+    # Save uploaded PDF to a temp file (pypdf wants a path)
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         tmp.write(resume_file.read())
         pdf_path = Path(tmp.name)
 
     resume_text = extract_text_from_pdf(pdf_path)
 
-    # Debug: confirm what text we extracted from the PDF
+    result = analyze(resume_text, jd_text_input)
+
+    # ----- Debug (optional but useful) -----
     with st.expander("Debug: extracted resume text (first 2000 chars)"):
         st.text(resume_text[:2000])
 
-    result = analyze(resume_text, jd_text_input)
     with st.expander("Debug: extracted skills sets"):
         st.write("resume_skills:", result["skills"]["resume_skills"])
         st.write("jd_skills:", result["skills"]["jd_skills"])
         st.write("missing:", result["skills"]["missing"])
+
     with st.expander("Debug: normalized JD (first 400 chars)"):
-        from jobfit.preprocess.normalize import normalize_text
         st.text(normalize_text(jd_text_input)[:400])
 
     # ----- Score -----
@@ -51,6 +50,7 @@ if analyze_clicked:
     s = result["score"]
     st.write(f"Skills score: {s['skills_points']}/{s['skills_max']}")
     st.write(f"Education score: {s['education_points']}/{s['education_max']}")
+    st.write(f"Experience score: {s['experience_points']}/{s['experience_max']}")
     st.write(f"Total score: {s['total_points']}/{s['total_max']}")
     st.caption(s["note"])
 
@@ -74,6 +74,14 @@ if analyze_clicked:
     st.write(f"Matched majors: {edu['matched_majors']}")
     st.write(f"Missing majors: {edu['missing_majors']}")
     st.write(f"Education score: {edu['education_total']}/15")
+
+    # ----- Experience -----
+    st.header("Experience")
+    exp = result["experience"]
+    st.write(f"JD years required: {exp['jd_years_required']}")
+    st.write(f"Resume years estimate: {exp['resume_years_estimate']}")
+    st.write(f"Coverage: {round(exp['coverage'], 2)}")
+    st.caption(exp["note"])
 
     # ----- Requirement coverage -----
     st.header("Requirement coverage (skills-based)")
