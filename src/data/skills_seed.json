@@ -3,13 +3,33 @@
     "python",
     "sql",
     "pandas",
+    "numpy",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "streamlit",
     "tableau",
-    "excel"
+    "power bi",
+    "excel",
+    "git",
+    "etl",
+    "api",
+    "data visualization",
+    "matplotlib",
+    "seaborn",
+    "tableau",
+    "power bi",
+    "tensorflow"
   ],
   "synonyms": {
     "postgresql": "sql",
     "mysql": "sql",
-    "powerbi": "tableau",
-    "sklearn": "scikit-learn"
+    "sklearn": "scikit-learn",
+    "scikit learn": "scikit-learn",
+    "powerbi": "power bi",
+    "rest api": "api",
+    "data viz": "data visualization",
+    "visualisation": "data visualization",
+    "scikit": "scikit-learn"
   }
 }
