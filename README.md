@@ -1,123 +1,132 @@
-# Job Fit Analyzer
+# Multi-Signal Job Fit Analyzer
 
-A Python-based job fit analysis tool that compares a resume against a job description and produces an explainable fit score.
-
-This project focuses on transparent, rule-based analysis rather than black-box models. It highlights which requirements are met, which are missing, and why a given score was assigned.
-
----
-
-## Features
-
-- Resume ingestion from PDF
-- Job description parsing from raw text
-- Skill extraction with synonym handling
-- Missing skill detection
-- Education level and major matching
-- Experience requirement parsing and estimation
-- Explainable 100-point scoring system
-- Command-line interface and Streamlit UI
-- Unit tests for core extraction and scoring logic
+A resume and job description analysis tool that evaluates candidate fit using multiple independent signals.  
+The system produces an explainable, category-level breakdown rather than a single opaque score, enabling clearer insight into strengths, gaps, and alignment.
 
 ---
 
-## Scoring Model
+## Overview
 
-The total score is calculated out of 100 points using three independent signals:
+The Multi-Signal Job Fit Analyzer compares a candidate’s resume against a job description using structured parsing and rule-based heuristics.  
+It evaluates fit across three core dimensions:
 
-| Category    | Max Points |
-|------------|------------|
-| Skills     | 50         |
-| Education  | 15         |
-| Experience | 35         |
-| **Total**  | **100**    |
+- Skills alignment
+- Education alignment
+- Experience alignment
 
-Each category produces a detailed, interpretable breakdown rather than a single opaque score.
+Each dimension is scored independently and combined into a 100-point composite score with transparent reasoning.
+
+This project is designed as a foundation for more advanced weighting, calibration, and feedback systems.
 
 ---
 
-## Project Structure
+## Core Features
+
+### Multi-Signal Scoring Model
+Candidate fit is evaluated using three independent signals:
+
+- **Skills Matching**
+  - Exact and normalized skill matching
+  - Detection of missing or underrepresented skills
+- **Education Alignment**
+  - Degree level detection (Bachelor’s, Master’s, PhD variants)
+  - Major-to-role alignment using an expanded taxonomy
+- **Experience Evaluation**
+  - Parsing of experience requirements from job descriptions
+  - Estimation of candidate experience based on resume content
+
+Scores are combined into a 100-point scale with a clear breakdown for each category.
+
+---
+
+## Explainability First
+
+Rather than returning a single numerical score, the analyzer surfaces:
+
+- Why a candidate is a strong or weak fit
+- Which categories contribute positively or negatively
+- Where gaps exist relative to job requirements
+
+This design supports transparency and future feedback-driven improvements.
+
+---
+
+## Data & Parsing Enhancements
+
+Recent updates focused on improving accuracy and coverage:
+
+- Expanded skills dataset (200+ skills) to reduce false negatives
+- Expanded majors dataset (30+ majors) for better education matching
+- Improved degree detection logic supporting common abbreviations and variants
+
+These improvements increase recall and reliability without altering the core scoring model.
+
+---
+
+## Technology Stack
+
+- Python
+- Streamlit (UI layer)
+- Regular expressions and heuristic parsing
+- JSON-based seed datasets for skills and majors
+
+---
+
+## Project Structure (High Level)
 
 ```
-job-fit-analyzer/
+.
 ├── app.py
-├── src/
-│   ├── jobfit/
-│   │   ├── analyze.py
-│   │   ├── preprocess/
-│   │   ├── extract/
-│   │   ├── score/
-│   │   └── ingest/
-│   ├── data/
-│   │   ├── skills_seed.json
-│   │   └── majors_seed.json
-│   └── tests/
-├── pyproject.toml
-├── requirements.txt
+├── data/
+│   ├── skills.json
+│   └── majors.json
+├── parsing/
+│   ├── skills.py
+│   ├── education.py
+│   └── experience.py
+├── scoring/
+│   └── score.py
 └── README.md
 ```
 
 ---
 
-## How It Works
+## Current Limitations
 
-1. Resume text is extracted from a PDF
-2. Resume and job description text are normalized
-3. Skills are detected using a curated skill dictionary and synonyms
-4. Education level and major keywords are identified
-5. Experience requirements are parsed from the job description
-6. Resume experience is estimated from date ranges
-7. Scores are calculated per category
-8. Missing requirements are surfaced explicitly
+- Heuristic-based parsing (no ML models yet)
+- Equal weighting across scoring categories
+- UI focused on functionality rather than polish
 
 ---
 
-## Running the Application
+## Roadmap
 
-### Install dependencies
-```bash
-python -m pip install -e .
-```
+Planned future improvements include:
 
-### Run tests
-```bash
-python -m pytest
-```
-
-### Run the Streamlit app
-```bash
-python -m streamlit run app.py
-```
+- Category-level weighting and calibration
+- Resume feedback and improvement suggestions
+- UI and visualization enhancements
+- Exportable reports
+- Optional ML-assisted parsing and matching
 
 ---
 
-## Example Output
+## Versioning
 
-- Matched skills
-- Missing skills
-- Education alignment
-- Experience coverage
-- Per-category score breakdown
-- Total job fit score
+This project follows semantic versioning:
+
+- **v0.2.0** – Introduced multi-signal scoring with explainable breakdowns
+- **v0.2.1** – Improved parsing accuracy and expanded skills and majors datasets
 
 ---
 
-## Design Philosophy
+## Disclaimer
 
-This project prioritizes explainability, deterministic logic, and real-world resume and job description edge cases. The goal is to provide candidates with actionable feedback rather than opaque predictions.
-
----
-
-## Future Improvements
-
-- Required vs nice-to-have weighting
-- Experience overlap handling
-- Resume feedback suggestions
-- Skill gap learning recommendations
-- Confidence calibration for scores
-- Expanded skill ontology
+This tool is intended for educational and exploratory purposes.  
+It does not replace human judgment in hiring decisions.
 
 ---
 
-## License
+## Author
 
-MIT License
+Developed by Alex Soja
