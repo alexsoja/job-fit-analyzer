@@ -1,0 +1,5 @@
+Education: BS Data Science, UIUC, May 2026
+
+Skills: Python, SQL, pandas
+
+Experience: Data Analyst Intern, did dashboards

@@ -1,0 +1,3 @@
+Requirements: Python, SQL
+Nice to have: Tableau
+Degree in CS, DS, Stats

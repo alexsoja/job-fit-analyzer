@@ -1,33 +1,37 @@
 # Job Fit Analyzer
 
-A Python project that evaluates how well a resume matches a job description.
-The tool compares skills, education, and experience to produce a fit score out of 100,
-along with matched and missing areas.
+A simple Python project that compares a resume and a job description to produce:
+- a basic fit score (/100)
+- matched vs missing skills
+- requirement line coverage (skills-based)
+- CLI and Streamlit UI
 
-## Features
-- Resume PDF parsing
-- Job description analysis
-- Skill and requirement matching
-- Weighted fit score (/100)
-- Breakdown of matched and missing areas
+This repo is intentionally designed to be easy to understand and rebuild.
 
-## Tech Stack
-- Python
-- PDF parsing (pypdf / pdfplumber)
-- Text processing (regex, NLP utilities)
-- Optional: sentence embeddings for semantic matching
+## Setup
 
-## How It Works
-1. Extracts text from a resume PDF
-2. Parses requirements from a job description
-3. Matches skills, education, and experience
-4. Computes a weighted fit score
-5. Outputs matched and missing areas
+```bash
+python -m pip install -r requirements.txt
+python -m pip install -e .
+```
 
-## Project Status
-🚧 In progress — MVP under development
+## Run the CLI
 
-## Future Improvements
-- Semantic matching using embeddings
-- Streamlit web interface
-- Resume feedback suggestions
+```bash
+python -m jobfit.cli --resume src/tests/fixtures/sample_resume.txt --jd src/tests/fixtures/sample_jd.txt
+```
+
+## Run the Streamlit app
+
+```bash
+streamlit run app.py
+```
+
+## What is implemented right now
+
+- TXT and PDF resume ingestion (PDF uses pypdf)
+- Text normalization (lowercasing and whitespace cleanup)
+- Skill extraction using a small seed list (JSON)
+- Basic score out of 100 (skills-only so far)
+- Requirement line extraction and coverage (skills-based)
+- Shared analysis function used by both CLI and Streamlit (`jobfit.analyze.analyze`)

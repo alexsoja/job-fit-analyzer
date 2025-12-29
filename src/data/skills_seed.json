@@ -1,0 +1,15 @@
+{
+  "skills": [
+    "python",
+    "sql",
+    "pandas",
+    "tableau",
+    "excel"
+  ],
+  "synonyms": {
+    "postgresql": "sql",
+    "mysql": "sql",
+    "powerbi": "tableau",
+    "sklearn": "scikit-learn"
+  }
+}
